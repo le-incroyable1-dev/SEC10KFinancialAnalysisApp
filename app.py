@@ -10,22 +10,21 @@ import json
 import ast
 import time
 import sys
+from sec_edgar_downloader import Downloader
+
+user_input = ""
+user_input = streamlit.text_input("Enter the company ticker to analyze financial trends : ", "")
+while user_input == "":
+   time.sleep(2)
+
+companies = []
+companies.append(user_input)
 
 save_dir = './sec_filings'
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
 filings = []
-
-from sec_edgar_downloader import Downloader
-
-user_input = ""
-user_input = streamlit.text_input("Enter the company ticker to analyze financial trends : ", "")
-companies = []
-companies.append(user_input)
-
-while user_input == "":
-   time.sleep(5)
 
 start_year = 1995
 end_year = 2023
@@ -97,6 +96,7 @@ def extract_section(file_path: str) -> Optional[str]:
 
     return section_content
 
+st.info("Extracting financial data...")
 all_financial_data = ""
 for file in filings:
   if processed == 1:
@@ -123,7 +123,7 @@ OPTION = ""
 st.info("Currently the app runs on Anthropic API, can be extended in the future!")
 OPTION = streamlit.text_input("Enter 1 if you have a valid Anthropic Api Key or enter 0 to display a demo from GOOGL : ", "")
 while OPTION == "":
-   time.sleep(5)
+   time.sleep(2)
 
 print("OPTION : ", OPTION)
 
@@ -136,7 +136,7 @@ else:
    sys.exit()
    
 while APIKEY == "":
-   time.sleep(5)
+   time.sleep(2)
 
 print("APIKEY : ", APIKEY)
 
@@ -158,8 +158,15 @@ response = requests.post(
 print("RESPONSE : ", response)
 data_dict = json.loads(response.text)
 
+# reset variables
+user_input = ""
+APIKEY = ""
+OPTION = ""
+
+
 result = ""
 if "completion" not in data_dict:
+    # use sample result
    result = "Here are the revenue, expenses, cost of revenue, operating income, net income, and years in array form based on the financial data provided: ```js const revenues = [182527, 257637, 282836]; const expenses = [141303, 178923, 207994];  const costOfRevenues = [84732, 110939, 126203]; const operatingIncome = [41224, 78714, 74842]; const netIncome = [40269, 76033, 59972]; const years = [2020, 2021, 2022]; ```"
 else:
    result = data_dict["completion"]
