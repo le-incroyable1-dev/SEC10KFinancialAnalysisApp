@@ -102,10 +102,14 @@ for file in filings:
   if processed == 1:
      break
   print("extracting content from ", file , " .....")
-  content = extract_section(file)
-  all_financial_data += content + "\n"
+  try:
+     content = extract_section(file)
+     all_financial_data += content + ". " 
+  except Exception as e:
+     # This block catches all other exceptions
+     print("An error occurred:", e)  
 
-st.info("Extracted financial data from all files!")
+st.info("Extracted available financial data from all files!")
 
 maxPromptLen = min(199999, len(all_financial_data)) # according to max prompt length for request
 st.info("Fitting Data into the Maximum Prompt Length")
